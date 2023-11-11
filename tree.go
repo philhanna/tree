@@ -108,7 +108,7 @@ func (p *Dir) Print() {
 func (p *Dir) GetPath() string {
 	switch {
 	case p.Parent == nil:
-		return ""
+		return p.Name
 	default:
 		return p.Parent.GetPath() + "/" + p.Name
 	}
