@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"github.com/philhanna/tree"
 )
 
 const (
@@ -17,17 +18,13 @@ func PrintUsage() {
 func main() {
 	flag.Usage = PrintUsage
 	flag.Parse()
-	filename := "."
+	dirname := "."
 	if flag.NArg() != 0 {
-		filename = flag.Arg(0)
+		dirname = flag.Arg(0)
 	}
 	
-	err := Tree(filename)
+	err := tree.Tree(dirname)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 	}
-}
-
-func Tree(filename string) error {
-	return nil
 }
