@@ -4,27 +4,40 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
 	"github.com/philhanna/tree"
 )
+
+// ---------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------
 
 const (
 	usage = `usage: tree [directory]`
 )
 
-func PrintUsage() {
-	fmt.Fprintln(os.Stderr, usage)
-}
+// ---------------------------------------------------------------------
+// Functions
+// ---------------------------------------------------------------------
 
 func main() {
-	flag.Usage = PrintUsage
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, usage)
+	}
 	flag.Parse()
+
+	// Get the directory name (default is current directory)
 	dirname := "."
 	if flag.NArg() != 0 {
 		dirname = flag.Arg(0)
 	}
-	
-	err := tree.Tree(dirname)
+
+	dir, err := tree.NewDir(dirname, nil)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Printf("%s\n", err)
 	}
+	_ = dir
+
+	fmt.Printf("%s\n", dir.Name)
+	dir.PrintTree()
 }
