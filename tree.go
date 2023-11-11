@@ -101,23 +101,42 @@ func (p *Dir) GetPath() string {
 	}
 }
 
-func (p *Dir) indent(level int) string {
-	return strings.Repeat(" ", 4*level)
-}
-
+// PrintTree writes the directory tree at this level to stdout
+//
+// All but the last child of the current directory are printed like this:
+//
+// │   │   ├── elves.c#
+//
+// where the prefix consists of:
+// level-1 * (vertical bar plus three spaces), followed by
+// ├──<space>
+//
+// The last child of the current directory uses the same prefix, except
+// the last part is
+// └───<space>
 func (p *Dir) PrintTree(level int) {
-	if level == 0 {
-		fmt.Printf("%s\n", p.Name)
-	} else {
-		fmt.Printf("%s%s\n", p.indent(level), p.Name)
+
+	indent := func(level int) string {
+		switch level {
+		case 0:
+			return ""
+		default:
+			return strings.Repeat("│   ", level-1)
+		}
 	}
+
+	fmt.Printf("%s%s\n", indent(level), p.Name)
+
 	for i, child := range p.Children {
-		_ = i
+		elbow := "├─── "
+		if i == len(p.Children)-1 {
+			elbow = "└─── "
+		}
 		switch v := child.(type) {
 		case *Dir:
 			v.PrintTree(level + 1)
 		case *File:
-			fmt.Printf("%s%s\n", p.indent(level+1), v.Name)
+			fmt.Printf("%s%s\n", indent(level+1)+elbow, v.Name)
 		default:
 			fmt.Printf("BUG: Unknown type %v\n", v)
 		}
