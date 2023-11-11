@@ -1,7 +1,6 @@
 package tree
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -13,13 +12,13 @@ func TestNewDir(t *testing.T) {
 		name    string
 		dirname string
 	}{
-		{"simple", "/home/saspeh/VSProjects" },
+		{"simple", "/home/saspeh/VSProjects"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dir, err := NewDir(tt.dirname, nil)
 			assert.Nil(t, err)
-			fmt.Println(dir)
+			assert.NotNil(t, dir)
 		})
 	}
 }
@@ -67,11 +66,4 @@ func TestDir_Print(t *testing.T) {
 			p.Print()
 		})
 	}
-}
-
-func TestDir_GetPath(t *testing.T) {
-
-	dir, err := NewDir("/home/saspeh/VSProjects", nil)
-	assert.NotNil(t, dir)
-	assert.Nil(t, err)
 }
