@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strings"
@@ -116,6 +116,7 @@ func (p *Dir) GetPath() string {
 // └───<space>
 func (p *Dir) PrintTree(level int) {
 
+	log.Printf("DEBUG: Entering PrintTree(%d) for %s\n", level, p.Name)
 	indent := func(level int) string {
 		switch level {
 		case 0:
@@ -125,7 +126,7 @@ func (p *Dir) PrintTree(level int) {
 		}
 	}
 
-	fmt.Printf("%s%s\n", indent(level), p.Name)
+	log.Printf("%s%s\n", indent(level), p.Name)
 
 	for i, child := range p.Children {
 		elbow := "├─── "
@@ -136,9 +137,9 @@ func (p *Dir) PrintTree(level int) {
 		case *Dir:
 			v.PrintTree(level + 1)
 		case *File:
-			fmt.Printf("%s%s\n", indent(level+1)+elbow, v.Name)
+			log.Printf("%s%s\n", indent(level+1)+elbow, v.Name)
 		default:
-			fmt.Printf("BUG: Unknown type %v\n", v)
+			log.Printf("BUG: Unknown type %v\n", v)
 		}
 	}
 }
