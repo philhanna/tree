@@ -6,16 +6,12 @@ import (
 	"os"
 )
 
-// ---------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------
-
 const (
-	usage = `usage: tree [directory]
-`
+	usage = `usage: tree [directory]`
 )
+
 func PrintUsage() {
-	fmt.Fprint(os.Stderr, usage)
+	fmt.Fprintln(os.Stderr, usage)
 }
 
 func main() {
