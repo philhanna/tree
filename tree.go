@@ -49,7 +49,7 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 		return nil, err
 	}
 
-	// Sort the contents
+	// Sort the contents (ignoring case)
 	sort.Slice(files, func(i, j int) bool {
 		iUpper := strings.ToUpper(files[i].Name())
 		jUpper := strings.ToUpper(files[j].Name())
@@ -60,6 +60,11 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	for i := 0; i < len(files); i++ {
 		file := files[i]
 		name := file.Name()
+		if !FlagA {
+			if strings.HasPrefix(name, ".") {
+				continue
+			}
+		}
 		if file.IsDir() {
 			subDir, err := NewDir(name, dir)
 			if err != nil {
@@ -96,17 +101,23 @@ func (p *Dir) GetPath() string {
 	}
 }
 
+func (p *Dir) indent(level int) string {
+	return strings.Repeat(" ", 4*level)
+}
+
 func (p *Dir) PrintTree(level int) {
-	indent := func(level int) string {
-		return strings.Repeat(" ", 4*level)
+	if level == 0 {
+		fmt.Printf("%s\n", p.Name)
+	} else {
+		fmt.Printf("%s%s\n", p.indent(level), p.Name)
 	}
-	fmt.Printf("%s%s\n", indent(level), p.Name)
-	for _, child := range p.Children {
+	for i, child := range p.Children {
+		_ = i
 		switch v := child.(type) {
 		case *Dir:
 			v.PrintTree(level + 1)
 		case *File:
-			fmt.Printf("%s%s\n", indent(level+1), v.Name)
+			fmt.Printf("%s%s\n", p.indent(level+1), v.Name)
 		default:
 			fmt.Printf("BUG: Unknown type %v\n", v)
 		}
