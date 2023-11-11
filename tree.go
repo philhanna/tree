@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"fmt"
+	"io/fs"
 	"os"
 	"sort"
 	"strings"
@@ -13,12 +13,13 @@ import (
 
 type Dir struct {
 	Name     string // Directory name
-	Path     string // Full path
+	Parent   *Dir   // Containing directory
 	Children []any  // Immediate children
 }
 
 type File struct {
-	Name string // File name
+	Name   string // File name
+	Parent *Dir   // Containing directory
 }
 
 // ---------------------------------------------------------------------
@@ -26,16 +27,17 @@ type File struct {
 // ---------------------------------------------------------------------
 
 // NewDir creates a new directory object and loads its children
-func NewDir(dirname string, path string) (*Dir, error) {
+func NewDir(dirname string, parent *Dir) (*Dir, error) {
 
 	// Create the directory object
 	dir := &Dir{
 		Name:     dirname,
-		Path:     path,
+		Parent:   parent,
 		Children: make([]any, 0),
 	}
 
 	// Open the directory
+	path := dir.GetPath()
 	fp, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -55,26 +57,29 @@ func NewDir(dirname string, path string) (*Dir, error) {
 		return iUpper < jUpper
 	})
 
+	// Ignore hidden files unless -a was specified
+	if !FlagA {
+		newFiles := make([]fs.FileInfo, 0)
+		for _, file := range files {
+			if !strings.HasPrefix(file.Name(), ".") {
+				newFiles = append(newFiles, file)
+			}
+		}
+		files = newFiles
+	}
+
 	// Walk through the contents and create the children of this directory
 	for i := 0; i < len(files); i++ {
 		file := files[i]
 		name := file.Name()
-
-		// Ignore hidden files unless -a was specified
-		if !FlagA {
-			if strings.HasPrefix(name, ".") {
-				continue
-			}
-		}
-
 		if file.IsDir() {
-			subDir, err := NewDir(name, path+"/"+name)
+			subDir, err := NewDir(name, dir)
 			if err != nil {
 				return nil, err
 			}
 			dir.Children = append(dir.Children, subDir)
 		} else {
-			subFile := NewFile(name)
+			subFile := NewFile(name, dir)
 			dir.Children = append(dir.Children, subFile)
 		}
 	}
@@ -84,9 +89,10 @@ func NewDir(dirname string, path string) (*Dir, error) {
 }
 
 // NewFile creates a new file entry
-func NewFile(filename string) *File {
+func NewFile(filename string, parent *Dir) *File {
 	file := &File{
-		Name: filename,
+		Name:   filename,
+		Parent: parent,
 	}
 	return file
 }
@@ -95,32 +101,15 @@ func NewFile(filename string) *File {
 // Methods
 // ---------------------------------------------------------------------
 
-func getElbow(level int, isLast bool) string {
-	var elbow string
-	switch {
-	case level == 0:
-		elbow = ""
-	case isLast:
-		elbow = "└─── "
-	default:
-		elbow = "├─── "
-	}
-	return elbow
+func (p *Dir) Print() {
+
 }
 
-// PrintTree writes the directory tree at this level to stdout
-func (p *Dir) PrintTree(level int, isLast bool) {
-
-	elbow := getElbow(level, isLast)
-	fmt.Printf("%s%s\n", elbow, p.Name)
-
-	for i, child := range p.Children {
-		isLastChild := i == len(p.Children)-1
-		switch v := child.(type) {
-		case *Dir:
-			v.PrintTree(level+1, isLastChild)
-		case *File:
-			fmt.Printf("%s%s\n", elbow, v.Name)
-		}
+func (p *Dir) GetPath() string {
+	switch {
+	case p.Parent == nil:
+		return ""
+	default:
+		return p.Parent.GetPath() + "/" + p.Name
 	}
 }
