@@ -12,9 +12,9 @@ import (
 // ---------------------------------------------------------------------
 
 type Dir struct {
-	Name   string  // Directory name
-	Parent *Dir    // Immediate parent directory
-	Children   []any  // Immediate children
+	Name     string // Directory name
+	Parent   *Dir   // Immediate parent directory
+	Children []any  // Immediate children
 }
 
 type File struct {
@@ -27,11 +27,11 @@ type File struct {
 
 // NewDir creates a new directory object and loads its children
 func NewDir(dirname string, parent *Dir) (*Dir, error) {
-	
+
 	// Create the directory object
 	dir := &Dir{
-		Name: dirname,
-		Parent: parent,
+		Name:     dirname,
+		Parent:   parent,
 		Children: make([]any, 0),
 	}
 
@@ -97,7 +97,18 @@ func (p *Dir) GetPath() string {
 }
 
 func (p *Dir) PrintTree(level int) {
-	indent := strings.Repeat(" ", level * 4)
-	fmt.Printf("%s%s\n", indent, p.Name)
-
+	indent := func(level int) string {
+		return strings.Repeat(" ", 4*level)
+	}
+	fmt.Printf("%s%s\n", indent(level), p.Name)
+	for _, child := range p.Children {
+		switch v := child.(type) {
+		case *Dir:
+			v.PrintTree(level + 1)
+		case *File:
+			fmt.Printf("%s%s\n", indent(level+1), v.Name)
+		default:
+			fmt.Printf("BUG: Unknown type %v\n", v)
+		}
+	}
 }
