@@ -68,7 +68,7 @@ func NewDir(dirname string, path string) (*Dir, error) {
 		}
 
 		if file.IsDir() {
-			subDir, err := NewDir(name, path + "/" + name)
+			subDir, err := NewDir(name, path+"/"+name)
 			if err != nil {
 				return nil, err
 			}
@@ -95,21 +95,32 @@ func NewFile(filename string) *File {
 // Methods
 // ---------------------------------------------------------------------
 
-// PrintTree writes the directory tree at this level to stdout
-func (p *Dir) PrintTree(level int) {
-
-	fmt.Printf("%s\n", p.Name)
-
-	for _, child := range p.Children {
-		switch v := child.(type) {
-		case *Dir:
-			v.PrintTree(level + 1)
-		case *File:
-			v.PrintTree(level + 1)
-		}
+func getElbow(level int, isLast bool) string {
+	var elbow string
+	switch {
+	case level == 0:
+		elbow = ""
+	case isLast:
+		elbow = "└─── "
+	default:
+		elbow = "├─── "
 	}
+	return elbow
 }
 
-func (p *File) PrintTree(level int) {
-	fmt.Printf("%s\n", p.Name)
+// PrintTree writes the directory tree at this level to stdout
+func (p *Dir) PrintTree(level int, isLast bool) {
+
+	elbow := getElbow(level, isLast)
+	fmt.Printf("%s%s\n", elbow, p.Name)
+
+	for i, child := range p.Children {
+		isLastChild := i == len(p.Children)-1
+		switch v := child.(type) {
+		case *Dir:
+			v.PrintTree(level+1, isLastChild)
+		case *File:
+			fmt.Printf("%s%s\n", elbow, v.Name)
+		}
+	}
 }

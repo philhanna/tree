@@ -111,5 +111,5 @@ func main() {
 		fmt.Printf("%s\n", err)
 	}
 
-	dir.PrintTree(0)
+	dir.PrintTree(0, true)
 }
