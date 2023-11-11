@@ -1,7 +1,7 @@
 package tree
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -13,7 +13,7 @@ import (
 
 type Dir struct {
 	Name     string // Directory name
-	Parent   *Dir   // Immediate parent directory
+	Path     string // Full path
 	Children []any  // Immediate children
 }
 
@@ -26,17 +26,16 @@ type File struct {
 // ---------------------------------------------------------------------
 
 // NewDir creates a new directory object and loads its children
-func NewDir(dirname string, parent *Dir) (*Dir, error) {
+func NewDir(dirname string, path string) (*Dir, error) {
 
 	// Create the directory object
 	dir := &Dir{
 		Name:     dirname,
-		Parent:   parent,
+		Path:     path,
 		Children: make([]any, 0),
 	}
 
 	// Open the directory
-	path := dir.GetPath()
 	fp, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -67,9 +66,9 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 				continue
 			}
 		}
-		
+
 		if file.IsDir() {
-			subDir, err := NewDir(name, dir)
+			subDir, err := NewDir(name, path + "/" + name)
 			if err != nil {
 				return nil, err
 			}
@@ -96,53 +95,21 @@ func NewFile(filename string) *File {
 // Methods
 // ---------------------------------------------------------------------
 
-func (p *Dir) GetPath() string {
-	if p.Parent == nil {
-		return p.Name
-	} else {
-		return p.Parent.GetPath() + "/" + p.Name
-	}
-}
-
 // PrintTree writes the directory tree at this level to stdout
-//
-// All but the last child of the current directory are printed like this:
-//
-// │   │   ├── elves.c#
-//
-// where the prefix consists of:
-// level-1 * (vertical bar plus three spaces), followed by
-// ├──<space>
-//
-// The last child of the current directory uses the same prefix, except
-// the last part is
-// └───<space>
 func (p *Dir) PrintTree(level int) {
 
-	log.Printf("DEBUG: Entering PrintTree(%d) for %s\n", level, p.Name)
-	indent := func(level int) string {
-		switch level {
-		case 0:
-			return ""
-		default:
-			return strings.Repeat("│   ", level-1)
-		}
-	}
+	fmt.Printf("%s\n", p.Name)
 
-	log.Printf("%s%s\n", indent(level), p.Name)
-
-	for i, child := range p.Children {
-		elbow := "├─── "
-		if i == len(p.Children)-1 {
-			elbow = "└─── "
-		}
+	for _, child := range p.Children {
 		switch v := child.(type) {
 		case *Dir:
 			v.PrintTree(level + 1)
 		case *File:
-			log.Printf("%s%s\n", indent(level+1)+elbow, v.Name)
-		default:
-			log.Printf("BUG: Unknown type %v\n", v)
+			v.PrintTree(level + 1)
 		}
 	}
+}
+
+func (p *File) PrintTree(level int) {
+	fmt.Printf("%s\n", p.Name)
 }

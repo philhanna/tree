@@ -106,7 +106,7 @@ func main() {
 		dirname = flag.Arg(0)
 	}
 
-	dir, err := tree.NewDir(dirname, nil)
+	dir, err := tree.NewDir(dirname, dirname)
 	if err != nil {
 		fmt.Printf("%s\n", err)
 	}
