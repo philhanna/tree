@@ -38,6 +38,5 @@ func main() {
 	}
 	_ = dir
 
-	fmt.Printf("%s\n", dir.Name)
-	dir.PrintTree()
+	dir.PrintTree(0)
 }

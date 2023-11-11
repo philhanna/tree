@@ -1,7 +1,10 @@
 package tree
 
 import (
+	"fmt"
 	"os"
+	"sort"
+	"strings"
 )
 
 // ---------------------------------------------------------------------
@@ -11,8 +14,7 @@ import (
 type Dir struct {
 	Name   string  // Directory name
 	Parent *Dir    // Immediate parent directory
-	Dirs   []*Dir  // Immediate child directories
-	Files  []*File // Immediate child files
+	Children   []any  // Immediate children
 }
 
 type File struct {
@@ -30,8 +32,7 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	dir := &Dir{
 		Name: dirname,
 		Parent: parent,
-		Dirs: make([]*Dir, 0),
-		Files: make([]*File, 0),
+		Children: make([]any, 0),
 	}
 
 	// Open the directory
@@ -48,6 +49,13 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 		return nil, err
 	}
 
+	// Sort the contents
+	sort.Slice(files, func(i, j int) bool {
+		iUpper := strings.ToUpper(files[i].Name())
+		jUpper := strings.ToUpper(files[j].Name())
+		return iUpper < jUpper
+	})
+
 	// Walk through the contents and create the children of this directory
 	for i := 0; i < len(files); i++ {
 		file := files[i]
@@ -57,10 +65,10 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 			if err != nil {
 				return nil, err
 			}
-			dir.Dirs = append(dir.Dirs, subDir)
+			dir.Children = append(dir.Children, subDir)
 		} else {
 			subFile := NewFile(name)
-			dir.Files = append(dir.Files, subFile)
+			dir.Children = append(dir.Children, subFile)
 		}
 	}
 
@@ -88,6 +96,8 @@ func (p *Dir) GetPath() string {
 	}
 }
 
-func (p *Dir) PrintTree() {
-	//fmt.Printf()
+func (p *Dir) PrintTree(level int) {
+	indent := strings.Repeat(" ", level * 4)
+	fmt.Printf("%s%s\n", indent, p.Name)
+
 }
