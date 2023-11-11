@@ -50,13 +50,6 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 		return nil, err
 	}
 
-	// Sort the contents (ignoring case)
-	sort.Slice(files, func(i, j int) bool {
-		iUpper := strings.ToUpper(files[i].Name())
-		jUpper := strings.ToUpper(files[j].Name())
-		return iUpper < jUpper
-	})
-
 	// Ignore hidden files unless -a was specified
 	if !FlagA {
 		newFiles := make([]fs.FileInfo, 0)
@@ -67,6 +60,13 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 		}
 		files = newFiles
 	}
+
+	// Sort the contents (ignoring case)
+	sort.Slice(files, func(i, j int) bool {
+		iUpper := strings.ToUpper(files[i].Name())
+		jUpper := strings.ToUpper(files[j].Name())
+		return iUpper < jUpper
+	})
 
 	// Walk through the contents and create the children of this directory
 	for i := 0; i < len(files); i++ {
