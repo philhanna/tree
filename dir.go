@@ -11,29 +11,41 @@ import (
 // Type Definitions
 // ---------------------------------------------------------------------
 
+// Dir is an implementation of INode for a directory
 type Dir struct {
-	Name     string // Directory name
-	Parent   *Dir   // Containing directory
-	Children []any  // Immediate children
-}
-
-type File struct {
-	Name   string // File name
-	Parent *Dir   // Containing directory
+	name     string  // Directory name
+	parent   *Dir    // Containing directory
+	level    int     // How far removed from root node
+	isLast   bool    // True if this is the last child of the parent
+	children []INode // Immediate children
 }
 
 // ---------------------------------------------------------------------
-// Constructors
+// Constructor
 // ---------------------------------------------------------------------
 
 // NewDir creates a new directory object and loads its children
 func NewDir(dirname string, parent *Dir) (*Dir, error) {
 
 	// Create the directory object
-	dir := &Dir{
-		Name:     dirname,
-		Parent:   parent,
-		Children: make([]any, 0),
+	dir := new(Dir)
+	dir.name = dirname
+	dir.parent = parent
+	switch parent {
+	case nil:
+		dir.level = 0
+		dir.isLast = true
+	default:
+
+		// level is one greater than parent level
+		dir.level = 1 + parent.GetLevel()
+
+		// isLast is true if this directory name is the same as the name of
+		// the last child of the parent
+		n := len(parent.children)
+		lastChild := parent.children[n-1]
+		nameOfLastChild := lastChild.GetName()
+		dir.isLast = dirname == nameOfLastChild
 	}
 
 	// Open the directory
@@ -77,10 +89,10 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 			if err != nil {
 				return nil, err
 			}
-			dir.Children = append(dir.Children, subDir)
+			dir.children = append(dir.children, subDir)
 		} else {
 			subFile := NewFile(name, dir)
-			dir.Children = append(dir.Children, subFile)
+			dir.children = append(dir.children, subFile)
 		}
 	}
 
@@ -88,28 +100,39 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	return dir, nil
 }
 
-// NewFile creates a new file entry
-func NewFile(filename string, parent *Dir) *File {
-	file := &File{
-		Name:   filename,
-		Parent: parent,
-	}
-	return file
-}
-
 // ---------------------------------------------------------------------
 // Methods
 // ---------------------------------------------------------------------
+
+func (p *Dir) GetPath() string {
+	switch {
+	case p.parent == nil:
+		return p.name
+	default:
+		return p.parent.GetPath() + "/" + p.name
+	}
+}
 
 func (p *Dir) Print() {
 
 }
 
-func (p *Dir) GetPath() string {
-	switch {
-	case p.Parent == nil:
-		return p.Name
-	default:
-		return p.Parent.GetPath() + "/" + p.Name
-	}
+// ---------------------------------------------------------------------
+// Implementation of INode interface
+// ---------------------------------------------------------------------
+
+func (p *Dir) GetName() string {
+	return p.name
+}
+
+func (p *Dir) GetParent() *Dir {
+	return p.parent
+}
+
+func (p *Dir) GetLevel() int {
+	return p.level
+}
+
+func (p *Dir) IsLast() bool {
+	return p.isLast
 }
