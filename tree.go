@@ -60,11 +60,14 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	for i := 0; i < len(files); i++ {
 		file := files[i]
 		name := file.Name()
+
+		// Ignore hidden files unless -a was specified
 		if !FlagA {
 			if strings.HasPrefix(name, ".") {
 				continue
 			}
 		}
+		
 		if file.IsDir() {
 			subDir, err := NewDir(name, dir)
 			if err != nil {
