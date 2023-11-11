@@ -17,8 +17,17 @@ func PrintUsage() {
 func main() {
 	flag.Usage = PrintUsage
 	flag.Parse()
-	if flag.NArg() == 0 {
-		fmt.Printf("directory is a required parameter\n")
-		os.Exit(1)
+	filename := "."
+	if flag.NArg() != 0 {
+		filename = flag.Arg(0)
 	}
+	
+	err := Tree(filename)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+	}
+}
+
+func Tree(filename string) error {
+	return nil
 }
