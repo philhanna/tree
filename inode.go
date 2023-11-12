@@ -45,9 +45,9 @@ func TreeString(node INode) string {
 		case i < n-1 && comp.IsLast():
 			prefix = prefix + "    "
 		case i == n-1 && !comp.IsLast():
-			prefix = prefix + "├───"
+			prefix = prefix + "├── "
 		case i == n-1 && comp.IsLast():
-			prefix = prefix + "└───"
+			prefix = prefix + "└── "
 		}
 	}
 	line := prefix + node.GetName()
