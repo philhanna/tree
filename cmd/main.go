@@ -92,10 +92,8 @@ func main() {
 
 	flag.BoolVar(&tree.FlagA, "a", false, "All files are listed.")
 
-	if false {
-		flag.Usage = func() {
-			fmt.Fprintln(os.Stderr, usage)
-		}
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, usage)
 	}
 
 	flag.Parse()
