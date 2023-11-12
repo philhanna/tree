@@ -3,4 +3,6 @@ package tree
 
 var (
 	FlagA bool
+	NFiles int
+	NDirs int
 )

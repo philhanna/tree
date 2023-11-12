@@ -41,7 +41,7 @@ func TreeString(node INode) string {
 		comp = comps[i]
 		switch {
 		case i < n-1 && !comp.IsLast():
-			prefix = prefix + "│   " 
+			prefix = prefix + "│   "
 		case i < n-1 && comp.IsLast():
 			prefix = prefix + "    "
 		case i == n-1 && !comp.IsLast():
@@ -59,9 +59,11 @@ func PrintTree(node INode) {
 	fmt.Println(TreeString(node))
 	switch v := node.(type) {
 	case *Dir:
+		NDirs++
 		for _, child := range v.children {
 			PrintTree(child)
 		}
 	default:
+		NFiles++
 	}
 }

@@ -112,4 +112,5 @@ func main() {
 	}
 
 	tree.PrintTree(dir)
+	fmt.Printf("\n%d directories, %d files\n", tree.NDirs, tree.NFiles)
 }
