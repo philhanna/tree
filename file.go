@@ -8,7 +8,6 @@ package tree
 type File struct {
 	name   string // File name
 	parent *Dir   // Containing directory
-	level  int    // How far removed from root node
 }
 
 // ---------------------------------------------------------------------
@@ -20,9 +19,6 @@ func NewFile(filename string, parent *Dir) *File {
 	file := new(File)
 	file.name = filename
 	file.parent = parent
-
-	// level is one greater than parent level
-	file.level = 1 + parent.GetLevel()
 
 	return file
 }
