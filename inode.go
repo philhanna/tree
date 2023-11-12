@@ -14,6 +14,13 @@ type INode interface {
 	IsLast() bool    // True if this is the last child of the parent
 }
 
+// AbstractNode is the base class from which File and Dir inherit
+type AbstractNode struct {
+	INode
+	name   string // the node name
+	parent *Dir   // the containing directory node
+}
+
 // ---------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------
@@ -66,4 +73,31 @@ func PrintTree(node INode) {
 	default:
 		NFiles++
 	}
+}
+
+func (p *AbstractNode) GetName() string {
+	return p.name
+}
+
+func (p *AbstractNode) GetParent() *Dir {
+	return p.parent
+}
+
+func (p *AbstractNode) GetLevel() int {
+	parent := p.GetParent()
+	switch parent {
+	case nil:
+		return 0
+	default:
+		return 1 + parent.GetLevel()
+	}
+}
+
+func (p *AbstractNode) IsLast() bool {
+	if p.GetParent() == nil {
+		return true
+	}
+	siblings := p.GetParent().children
+	n := len(siblings)
+	return p.GetName() == siblings[n-1].GetName()
 }

@@ -14,8 +14,7 @@ import (
 
 // Dir is an implementation of INode for a directory
 type Dir struct {
-	name     string  // Directory name
-	parent   *Dir    // Containing directory
+	AbstractNode
 	children []INode // Immediate children
 }
 
@@ -121,38 +120,7 @@ func (p *Dir) String() string {
 
 	// Children
 	parts = append(parts, fmt.Sprintf("Children:%v", p.children))
-	
+
 	// Done
 	return strings.Join(parts, ",")
-}
-
-// ---------------------------------------------------------------------
-// Implementation of INode interface
-// ---------------------------------------------------------------------
-
-func (p *Dir) GetName() string {
-	return p.name
-}
-
-func (p *Dir) GetParent() *Dir {
-	return p.parent
-}
-
-func (p *Dir) GetLevel() int {
-	parent := p.GetParent()
-	switch parent {
-	case nil:
-		return 0
-	default:
-		return 1 + parent.GetLevel()
-	}
-}
-
-func (p *Dir) IsLast() bool {
-	if p.GetParent() == nil {
-		return true
-	}
-	siblings := p.GetParent().children
-	n := len(siblings)
-	return p.GetName() == siblings[n-1].GetName()
 }
