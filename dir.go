@@ -104,6 +104,7 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 // Methods
 // ---------------------------------------------------------------------
 
+// GetPath returns the full path of this directory from the root
 func (p *Dir) GetPath() string {
 	switch {
 	case p.parent == nil:
@@ -111,10 +112,6 @@ func (p *Dir) GetPath() string {
 	default:
 		return p.parent.GetPath() + "/" + p.name
 	}
-}
-
-func (p *Dir) Print() {
-
 }
 
 // ---------------------------------------------------------------------
