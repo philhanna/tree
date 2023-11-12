@@ -90,10 +90,10 @@ const (
 
 func main() {
 
-	flag.BoolVar(&tree.FlagA, "a", false, "All files are listed.")
-	flag.BoolVar(&tree.FlagD, "d", false, "List directories only.")
-	flag.IntVar(&tree.FlagL, "L", 0, "Descend only level directories deep.")
-	flag.BoolVar(&tree.FlagNoReport, "noreport", false, "Turn off file/directory count at end of tree listing.")
+	flag.BoolVar(&tree.Flag_a, "a", false, "All files are listed.")
+	flag.BoolVar(&tree.Flag_d, "d", false, "List directories only.")
+	flag.IntVar(&tree.Flag_L, "L", 0, "Descend only level directories deep.")
+	flag.BoolVar(&tree.Flag_noreport, "noreport", false, "Turn off file/directory count at end of tree listing.")
 
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, usage)
@@ -113,7 +113,7 @@ func main() {
 	}
 
 	tree.PrintTree(dir)
-	if !tree.FlagNoReport {
+	if !tree.Flag_noreport {
 		fmt.Printf("\n%d directories, %d files\n", tree.NDirs, tree.NFiles)
 	}
 }

@@ -31,8 +31,8 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	dir.children = make([]INode, 0)
 
 	// Check for the -L depth valud
-	if FlagL > 0 {
-		if dir.GetLevel() >= FlagL {
+	if Flag_L > 0 {
+		if dir.GetLevel() >= Flag_L {
 			return dir, nil
 		}
 	}
@@ -52,7 +52,7 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	}
 
 	// Ignore hidden files unless -a was specified
-	if !FlagA {
+	if !Flag_a {
 		newFiles := make([]fs.FileInfo, 0)
 		for _, file := range files {
 			if !strings.HasPrefix(file.Name(), ".") {
@@ -80,7 +80,7 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 			}
 			dir.children = append(dir.children, subDir)
 		} else {
-			if !FlagD {
+			if !Flag_d {
 				subFile := NewFile(name, dir)
 				dir.children = append(dir.children, subFile)
 			}
