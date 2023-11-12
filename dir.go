@@ -28,28 +28,18 @@ type Dir struct {
 // NewDir creates a new directory object and loads its children
 func NewDir(dirname string, parent *Dir) (*Dir, error) {
 
-	log.Printf("DEBUG: Entering NewDir for %s, parent=%v\n", dirname, parent)
+	dirname = strings.TrimSuffix(dirname, "/")
+	pString := "nil"
+	if parent != nil {
+		pString = parent.GetPath()
+	}
+	log.Printf("DEBUG: Entering NewDir for %s, parent=%s\n", dirname, pString)
 
 	// Create the directory object
 	dir := new(Dir)
 	dir.name = dirname
 	dir.parent = parent
-	switch parent {
-	case nil:
-		dir.level = 0
-		dir.isLast = true
-	default:
-
-		// level is one greater than parent level
-		dir.level = 1 + parent.GetLevel()
-
-		// isLast is true if this directory name is the same as the name of
-		// the last child of the parent
-		n := len(parent.children)
-		lastChild := parent.children[n-1]
-		nameOfLastChild := lastChild.GetName()
-		dir.isLast = dirname == nameOfLastChild
-	}
+	dir.children = make([]INode, 0)
 
 	// Open the directory
 	path := dir.GetPath()
@@ -97,6 +87,24 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 			subFile := NewFile(name, dir)
 			dir.children = append(dir.children, subFile)
 		}
+	}
+
+	// Set the level and isLast attributes of this directory
+	switch parent {
+	case nil:
+		dir.level = 0
+		dir.isLast = true
+	default:
+
+		// level is one greater than parent level
+		dir.level = 1 + parent.GetLevel()
+
+		// isLast is true if this directory name is the same as the name of
+		// the last child of the parent
+		n := len(parent.children)
+		lastChild := parent.children[n-1]
+		nameOfLastChild := lastChild.GetName()
+		dir.isLast = dirname == nameOfLastChild
 	}
 
 	// Normal return
