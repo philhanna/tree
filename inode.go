@@ -20,25 +20,35 @@ type INode interface {
 
 // TreeString creates a string representation of this node
 func TreeString(node INode) string {
-	var prefix string
-	if node.GetLevel() > 0 {
-		switch node.IsLast() {
-		case false:
-			prefix = "├───"
-		case true:
-			prefix = "└───"
-		}
+
+	n := node.GetLevel()
+	if n == 0 {
+		return node.GetName()
 	}
-	work := node
-	for work.GetParent() != nil {
-		parent := work.GetParent()
-		switch parent.IsLast() {
-		case false:
-			prefix = "│   " + prefix
-		case true:
-			prefix = "    " + prefix
+
+	// Get a list of all the parent nodes plus this node
+	comps := make([]INode, n)
+	comp := node
+	for i := n - 1; i >= 0; i++ {
+		comps[i] = comp
+		comp = comp.GetParent()
+	}
+
+	// Construct the prefix
+
+	var prefix string
+	for i := 0; i < n; i++ {
+		comp = comps[i]
+		switch {
+		case i < n-1 && comp.IsLast():
+			prefix = prefix + "│   " 
+		case i < n-1 && !comp.IsLast():
+			prefix = prefix + "    "
+		case i == n-1 && comp.IsLast():
+			prefix = prefix + "├───"
+		case i == n-1 && !comp.IsLast():
+			prefix = prefix + "└───"
 		}
-		work = parent
 	}
 	line := prefix + node.GetName()
 	return line
