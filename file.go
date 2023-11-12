@@ -9,7 +9,6 @@ type File struct {
 	name   string // File name
 	parent *Dir   // Containing directory
 	level  int    // How far removed from root node
-	isLast bool   // True if this is the last child of the parent
 }
 
 // ---------------------------------------------------------------------
@@ -24,13 +23,6 @@ func NewFile(filename string, parent *Dir) *File {
 
 	// level is one greater than parent level
 	file.level = 1 + parent.GetLevel()
-
-	// isLast is true if this file name is the same as the name of
-	// the last child of the parent
-	n := len(parent.children)
-	lastChild := parent.children[n-1]
-	nameOfLastChild := lastChild.GetName()
-	file.isLast = filename == nameOfLastChild
 
 	return file
 }
@@ -52,5 +44,10 @@ func (p *File) GetLevel() int {
 }
 
 func (p *File) IsLast() bool {
-	return p.isLast
+	if p.GetParent() == nil {
+		return true
+	}
+	siblings := p.GetParent().children
+	n := len(siblings)
+	return p.GetName() == siblings[n-1].GetName()
 }

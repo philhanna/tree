@@ -1,6 +1,7 @@
 package tree
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
 	"os"
@@ -17,7 +18,6 @@ type Dir struct {
 	name     string  // Directory name
 	parent   *Dir    // Containing directory
 	level    int     // How far removed from root node
-	isLast   bool    // True if this is the last child of the parent
 	children []INode // Immediate children
 }
 
@@ -29,9 +29,10 @@ type Dir struct {
 func NewDir(dirname string, parent *Dir) (*Dir, error) {
 
 	dirname = strings.TrimSuffix(dirname, "/")
-	pString := "nil"
+
+	var pString string
 	if parent != nil {
-		pString = parent.GetPath()
+		pString = parent.GetName()
 	}
 	log.Printf("DEBUG: Entering NewDir for %s, parent=%s\n", dirname, pString)
 
@@ -39,6 +40,10 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	dir := new(Dir)
 	dir.name = dirname
 	dir.parent = parent
+	dir.level = 0
+	if parent != nil {
+		dir.level = 1 + parent.GetLevel()
+	}
 	dir.children = make([]INode, 0)
 
 	// Open the directory
@@ -89,24 +94,6 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 		}
 	}
 
-	// Set the level and isLast attributes of this directory
-	switch parent {
-	case nil:
-		dir.level = 0
-		dir.isLast = true
-	default:
-
-		// level is one greater than parent level
-		dir.level = 1 + parent.GetLevel()
-
-		// isLast is true if this directory name is the same as the name of
-		// the last child of the parent
-		n := len(parent.children)
-		lastChild := parent.children[n-1]
-		nameOfLastChild := lastChild.GetName()
-		dir.isLast = dirname == nameOfLastChild
-	}
-
 	// Normal return
 	return dir, nil
 }
@@ -123,6 +110,34 @@ func (p *Dir) GetPath() string {
 	default:
 		return p.parent.GetPath() + "/" + p.name
 	}
+}
+
+// String returns a string representation of this directory
+func (p *Dir) String() string {
+	parts := make([]string, 0)
+
+	// Name
+	parts = append(parts, fmt.Sprintf("Name:%q", p.GetName()))
+
+	// Parent
+	var parentName string
+	parent := p.GetParent()
+	switch parent {
+	case nil:
+		parentName = "nil"
+	default:
+		parentName = parent.GetName()
+	}
+	parts = append(parts, fmt.Sprintf("Parent:%q", parentName))
+
+	// Level
+	parts = append(parts, fmt.Sprintf("Level:%d", p.GetLevel()))
+
+	// Children
+	parts = append(parts, fmt.Sprintf("Children:%v", p.children))
+	
+	// Done
+	return strings.Join(parts, ",")
 }
 
 // ---------------------------------------------------------------------
@@ -142,5 +157,10 @@ func (p *Dir) GetLevel() int {
 }
 
 func (p *Dir) IsLast() bool {
-	return p.isLast
+	if p.GetParent() == nil {
+		return true
+	}
+	siblings := p.GetParent().children
+	n := len(siblings)
+	return p.GetName() == siblings[n-1].GetName()
 }
