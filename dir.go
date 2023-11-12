@@ -1,7 +1,6 @@
 package tree
 
 import (
-	"fmt"
 	"io/fs"
 	"os"
 	"sort"
@@ -95,32 +94,4 @@ func (p *Dir) GetPath() string {
 	default:
 		return p.parent.GetPath() + "/" + p.name
 	}
-}
-
-// String returns a string representation of this directory
-func (p *Dir) String() string {
-	parts := make([]string, 0)
-
-	// Name
-	parts = append(parts, fmt.Sprintf("Name:%q", p.GetName()))
-
-	// Parent
-	var parentName string
-	parent := p.GetParent()
-	switch parent {
-	case nil:
-		parentName = "nil"
-	default:
-		parentName = parent.GetName()
-	}
-	parts = append(parts, fmt.Sprintf("Parent:%q", parentName))
-
-	// Level
-	parts = append(parts, fmt.Sprintf("Level:%d", p.GetLevel()))
-
-	// Children
-	parts = append(parts, fmt.Sprintf("Children:%v", p.children))
-
-	// Done
-	return strings.Join(parts, ",")
 }

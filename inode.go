@@ -14,18 +14,11 @@ type INode interface {
 	IsLast() bool    // True if this is the last child of the parent
 }
 
-// Node is the base class from which File and Dir inherit
-type Node struct {
-	INode
-	name   string // the node name
-	parent *Dir   // the containing directory node
-}
-
 // ---------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------
 
-// TreeString creates a string representation of this node
+// TreeString creates a string representation of this file or directory
 func TreeString(node INode) string {
 
 	n := node.GetLevel()
@@ -42,7 +35,6 @@ func TreeString(node INode) string {
 	}
 
 	// Construct the prefix
-
 	var prefix string
 	for i := 0; i < n; i++ {
 		comp = comps[i]
@@ -73,31 +65,4 @@ func PrintTree(node INode) {
 	default:
 		NFiles++
 	}
-}
-
-func (p *Node) GetName() string {
-	return p.name
-}
-
-func (p *Node) GetParent() *Dir {
-	return p.parent
-}
-
-func (p *Node) GetLevel() int {
-	parent := p.GetParent()
-	switch parent {
-	case nil:
-		return 0
-	default:
-		return 1 + parent.GetLevel()
-	}
-}
-
-func (p *Node) IsLast() bool {
-	if p.GetParent() == nil {
-		return true
-	}
-	siblings := p.GetParent().children
-	n := len(siblings)
-	return p.GetName() == siblings[n-1].GetName()
 }
