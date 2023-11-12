@@ -3,7 +3,6 @@ package tree
 import (
 	"fmt"
 	"io/fs"
-	"log"
 	"os"
 	"sort"
 	"strings"
@@ -17,7 +16,6 @@ import (
 type Dir struct {
 	name     string  // Directory name
 	parent   *Dir    // Containing directory
-	level    int     // How far removed from root node
 	children []INode // Immediate children
 }
 
@@ -28,22 +26,10 @@ type Dir struct {
 // NewDir creates a new directory object and loads its children
 func NewDir(dirname string, parent *Dir) (*Dir, error) {
 
-	dirname = strings.TrimSuffix(dirname, "/")
-
-	var pString string
-	if parent != nil {
-		pString = parent.GetName()
-	}
-	log.Printf("DEBUG: Entering NewDir for %s, parent=%s\n", dirname, pString)
-
 	// Create the directory object
 	dir := new(Dir)
 	dir.name = dirname
 	dir.parent = parent
-	dir.level = 0
-	if parent != nil {
-		dir.level = 1 + parent.GetLevel()
-	}
 	dir.children = make([]INode, 0)
 
 	// Open the directory
@@ -153,7 +139,13 @@ func (p *Dir) GetParent() *Dir {
 }
 
 func (p *Dir) GetLevel() int {
-	return p.level
+	parent := p.GetParent()
+	switch parent {
+	case nil:
+		return 0
+	default:
+		return 1 + parent.GetLevel()
+	}
 }
 
 func (p *Dir) IsLast() bool {

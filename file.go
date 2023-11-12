@@ -40,7 +40,13 @@ func (p *File) GetParent() *Dir {
 }
 
 func (p *File) GetLevel() int {
-	return p.level
+	parent := p.GetParent()
+	switch parent {
+	case nil:
+		return 0
+	default:
+		return 1 + parent.GetLevel()
+	}
 }
 
 func (p *File) IsLast() bool {
