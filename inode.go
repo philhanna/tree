@@ -29,7 +29,7 @@ func TreeString(node INode) string {
 	// Get a list of all the parent nodes plus this node
 	comps := make([]INode, n)
 	comp := node
-	for i := n - 1; i >= 0; i++ {
+	for i := n - 1; i >= 0; i-- {
 		comps[i] = comp
 		comp = comp.GetParent()
 	}
@@ -40,13 +40,13 @@ func TreeString(node INode) string {
 	for i := 0; i < n; i++ {
 		comp = comps[i]
 		switch {
-		case i < n-1 && comp.IsLast():
-			prefix = prefix + "│   " 
 		case i < n-1 && !comp.IsLast():
+			prefix = prefix + "│   " 
+		case i < n-1 && comp.IsLast():
 			prefix = prefix + "    "
-		case i == n-1 && comp.IsLast():
-			prefix = prefix + "├───"
 		case i == n-1 && !comp.IsLast():
+			prefix = prefix + "├───"
+		case i == n-1 && comp.IsLast():
 			prefix = prefix + "└───"
 		}
 	}
