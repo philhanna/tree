@@ -36,8 +36,9 @@ func TreeString(node INode) string {
 		case false:
 			prefix = "│   " + prefix
 		case true:
-			prefix = "└   " + prefix
+			prefix = "    " + prefix
 		}
+		work = parent
 	}
 	line := prefix + node.GetName()
 	return line
