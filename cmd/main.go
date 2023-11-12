@@ -91,6 +91,7 @@ const (
 func main() {
 
 	flag.BoolVar(&tree.FlagA, "a", false, "All files are listed.")
+	flag.BoolVar(&tree.FlagD, "d", false, "List directories only.")
 	flag.IntVar(&tree.FlagL, "L", 0, "Descend only level directories deep.")
 	flag.BoolVar(&tree.FlagNoReport, "noreport", false, "Turn off file/directory count at end of tree listing.")
 

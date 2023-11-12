@@ -34,7 +34,7 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	if FlagL > 0 {
 		if dir.GetLevel() >= FlagL {
 			return dir, nil
-		}	
+		}
 	}
 
 	// Open the directory
@@ -80,8 +80,10 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 			}
 			dir.children = append(dir.children, subDir)
 		} else {
-			subFile := NewFile(name, dir)
-			dir.children = append(dir.children, subFile)
+			if !FlagD {
+				subFile := NewFile(name, dir)
+				dir.children = append(dir.children, subFile)
+			}
 		}
 	}
 

@@ -8,6 +8,10 @@ var (
 	// the tree includes hidden files.
 	FlagA bool
 
+	// FlagD is the valud of the -d command line option. If true, then
+	// only directories are printed
+	FlagD bool
+
 	// FlagL is the value of the -L command line option. If specified,
 	// limits the depth of the subdirectories included.
 	FlagL int
