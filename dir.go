@@ -14,7 +14,7 @@ import (
 
 // Dir is an implementation of INode for a directory
 type Dir struct {
-	AbstractNode
+	Node
 	children []INode // Immediate children
 }
 

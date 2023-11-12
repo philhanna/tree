@@ -14,8 +14,8 @@ type INode interface {
 	IsLast() bool    // True if this is the last child of the parent
 }
 
-// AbstractNode is the base class from which File and Dir inherit
-type AbstractNode struct {
+// Node is the base class from which File and Dir inherit
+type Node struct {
 	INode
 	name   string // the node name
 	parent *Dir   // the containing directory node
@@ -75,15 +75,15 @@ func PrintTree(node INode) {
 	}
 }
 
-func (p *AbstractNode) GetName() string {
+func (p *Node) GetName() string {
 	return p.name
 }
 
-func (p *AbstractNode) GetParent() *Dir {
+func (p *Node) GetParent() *Dir {
 	return p.parent
 }
 
-func (p *AbstractNode) GetLevel() int {
+func (p *Node) GetLevel() int {
 	parent := p.GetParent()
 	switch parent {
 	case nil:
@@ -93,7 +93,7 @@ func (p *AbstractNode) GetLevel() int {
 	}
 }
 
-func (p *AbstractNode) IsLast() bool {
+func (p *Node) IsLast() bool {
 	if p.GetParent() == nil {
 		return true
 	}

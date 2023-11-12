@@ -6,7 +6,7 @@ package tree
 
 // File is an implementation of INode for a file
 type File struct {
-	AbstractNode
+	Node
 }
 
 // ---------------------------------------------------------------------
