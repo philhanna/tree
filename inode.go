@@ -43,6 +43,14 @@ func TreeString(node INode) string {
 	return line
 }
 
+// PrintTree walks the tree from this node down, printing each line
 func PrintTree(node INode) {
 	fmt.Println(TreeString(node))
+	switch v := node.(type) {
+	case *Dir:
+		for _, child := range v.children {
+			PrintTree(child)
+		}
+	default:
+	}
 }
