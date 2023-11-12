@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "cmd/main.go",
-            "args": "/home/saspeh/VSProjects"
+            "args": ["/home/saspeh/VSProjects"]
         }
     ]
 }

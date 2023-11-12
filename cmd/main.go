@@ -91,6 +91,7 @@ const (
 func main() {
 
 	flag.BoolVar(&tree.FlagA, "a", false, "All files are listed.")
+	flag.IntVar(&tree.FlagL, "L", 0, "Descend only level directories deep.")
 
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, usage)

@@ -30,6 +30,13 @@ func NewDir(dirname string, parent *Dir) (*Dir, error) {
 	dir.parent = parent
 	dir.children = make([]INode, 0)
 
+	// Check for the -L depth valud
+	if FlagL > 0 {
+		if dir.GetLevel() >= FlagL {
+			return dir, nil
+		}	
+	}
+
 	// Open the directory
 	path := dir.GetPath()
 	fp, err := os.Open(path)
