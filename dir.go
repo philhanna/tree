@@ -2,6 +2,7 @@ package tree
 
 import (
 	"io/fs"
+	"log"
 	"os"
 	"sort"
 	"strings"
@@ -26,6 +27,8 @@ type Dir struct {
 
 // NewDir creates a new directory object and loads its children
 func NewDir(dirname string, parent *Dir) (*Dir, error) {
+
+	log.Printf("DEBUG: Entering NewDir for %s, parent=%v\n", dirname, parent)
 
 	// Create the directory object
 	dir := new(Dir)

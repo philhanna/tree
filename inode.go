@@ -1,5 +1,7 @@
 package tree
 
+import "fmt"
+
 // ---------------------------------------------------------------------
 // Type Definitions
 // ---------------------------------------------------------------------
@@ -39,4 +41,8 @@ func TreeString(node INode) string {
 	}
 	line := prefix + node.GetName()
 	return line
+}
+
+func PrintTree(node INode) {
+	fmt.Println(TreeString(node))
 }
